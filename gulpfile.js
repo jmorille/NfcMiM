@@ -305,7 +305,7 @@ gulp.task('watch:images', ['images'], function (cb) {
 var vulcanizeFunc = function (cb) {
     var DEST_DIR = path.buildVulcanized + '/elements/';
     console.log('Vulcanize isErrorEatByWatch = ', isErrorEatByWatch);
-      gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
+    gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
         //.pipe(cache('vulcanizingDD')) // NOT WORKING BUT WHY ?
         .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
         .pipe(debug({title: 'vulcanize :'}))
@@ -327,9 +327,11 @@ var vulcanizeFunc = function (cb) {
 //        .pipe($.if('*.html', $.htmlMinifier({})))
         //       .pipe($.debug({title: 'vulcanize Save :'}))
         .pipe(gulp.dest(DEST_DIR))
-        .pipe(livereload());
+       // .pipe(livereload())
 
-    cb();
+
+
+     cb();
     //  .pipe(browserSyncReload({stream: true}));
 };
 

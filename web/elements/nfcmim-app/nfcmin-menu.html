@@ -1,0 +1,52 @@
+<link rel="import" href="../polymer/polymer.html">
+
+
+<!--
+
+The `nfcmin-menu` provides  
+
+@group nfcmin-menu Elements
+@element nfcmin-menu
+@demo demo/index.html
+-->
+
+<dom-module id="nfcmin-menu">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+
+        <paper-menu class="list">
+            <paper-item on-tap="_onTapMenu" route="home">Home</paper-item>
+            <paper-item on-tap="_onTapMenu" route="chat">Chat</paper-item>
+            <paper-item on-tap="_onTapMenu" route="reader">Reader</paper-item>
+            <paper-item on-tap="_onTapMenu" route="card">Card</paper-item>
+        </paper-menu>
+
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfcmin-menu',
+
+            properties: {},
+
+            _onTapMenu: function (event) {
+                var evt = Polymer.dom(event);
+                var sender = evt.rootTarget;
+                var route = sender.getAttribute('route');
+                console.log('Request navigateTo', route);
+                MoreRouting.navigateTo(route);
+                event.preventDefault();
+            }
+
+        });
+    })();
+</script>
