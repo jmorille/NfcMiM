@@ -7,9 +7,6 @@ var $ = require('gulp-load-plugins')();
 require('gulp-task-list')(gulp);
 var taskListing = require('gulp-task-listing');
 
-// Lint
-//var jshint = require('gulp-jshint');
-//var stylish = require('jshint-stylish');
 
 // Cache
 var cache = require('gulp-cached'),
@@ -19,11 +16,6 @@ var cache = require('gulp-cached'),
 
 // Build
 var del = require('del');
-//var runSequence = require('run-sequence');
-//var usemin = require('gulp-usemin');
-//var imagemin = require('gulp-imagemin');
-//var sass = require('gulp-sass');
-//var autoprefixer = require('gulp-autoprefixer');
 var vulcanize = require('gulp-vulcanize');
 var crisper = require('gulp-crisper');
 
@@ -41,18 +33,6 @@ var livereload = require('gulp-livereload');
 var browserSync = require('browser-sync');
 var browserSyncReload = browserSync.reload;
 
-//var source = require('vinyl-source-stream');
-//var buffer = require('vinyl-buffer');
-
-// Mobile
-//var shell = require('gulp-shell');
-
-// Dist Packaging
-//var gzip = require('gulp-gzip');
-//var zip = require('gulp-zip');
-
-//var rev = require('gulp-rev');
-//var revReplace = require('gulp-rev-replace');
 
 // Notification
 var notifier = require('node-notifier');
@@ -98,9 +78,7 @@ var AUTOPREFIXER_BROWSERS = [
 // Config
 var path = gulp.paths = {
     app: 'web',
-    sass: 'sass',
     build: 'build',
-    buildSass: 'build/sass',
     buildMap: 'build/maps',
     buildVulcanized: 'build/vulcanized',
     buildCCA: 'build/cca',
@@ -119,7 +97,6 @@ var path = gulp.paths = {
 var src = {
     bowerComponents: ['bower_components{,/**}'],
     images: ['**/*.{gif,jpg,jpeg,png}'],
-    sass: ['**/*.{scss,sass}', '!includes/**/*.*'],
     polymerElements: 'elements/**/*.{html,css,js}'
 };
 
@@ -136,7 +113,7 @@ var dockerOpt = gulp.dockerOpt = {
 // Load FOR 'gulp' Tasks
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 var requireDir = require('require-dir');
-requireDir('./gulp_tasks');
+requireDir('./tasks');
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -175,11 +152,11 @@ var isErrorEatByWatch = false;
 
 
 // Watch all files changes
-gulp.task('watch', ['watch:sass', 'cp:watch', 'watch:images', 'watch:vulcanize'], function (cb) {
+gulp.task('watch', ['cp:watch', 'watch:images', 'watch:vulcanize'], function (cb) {
     console.log('watch isErrorEatByWatch before', isErrorEatByWatch);
     isErrorEatByWatch = true;
     console.log('watch isErrorEatByWatch after', isErrorEatByWatch);
-    livereload.listen();
+   // livereload.listen();
     cb();
 });
 
@@ -244,13 +221,13 @@ var errorNotif = function (title) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 var configCp = {
-    cpGlob: withNotGlob(['**/**.*'], [src.sass, src.bowerComponents, src.polymerElements, src.images]),
+    cpGlob: withNotGlob(['**/**.*'], [src.bowerComponents, src.polymerElements, src.images]),
     imgGlob: withNotGlob([src.images], [src.bowerComponents])
 };
 
 // Copy - Internal
 var cpFunc = function () {
-    var DEST_DIR = path.buildSass;
+    var DEST_DIR = path.buildVulcanized;
     var assets = $.useref.assets();
     return gulp.src(configCp.cpGlob, {cwd: path.app, base: path.app})
         .pipe(cache('cping', {optimizeMemory: true}))
@@ -262,7 +239,6 @@ var cpFunc = function () {
         .pipe(assets.restore())
         .pipe($.useref())
         .pipe(gulp.dest(DEST_DIR))
-        .pipe(gulp.dest(path.buildVulcanized))
         .pipe(livereload());
     // .pipe(browserSyncReload({stream: true}));
 
@@ -319,55 +295,6 @@ gulp.task('watch:images', ['images'], function (cb) {
 });
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Saas TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-// Sass - Internal
-var sassFunc = function () {
-    var DEST_DIR = path.app;
-    var SASS_OPTS = {
-        includePaths: [
-            'sass/includes'
-        ],
-        errLogToConsole: false,
-        sourceComments: !prod,
-        outputStyle: prod ? 'compressed' : 'expanded'
-    };
-    return gulp.src(src.sass, {cwd: path.sass, base: path.sass})
-        .pipe(cache('sassing'))
-        .pipe(changed(DEST_DIR, {extension: '.css'}))
-        .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
-        .pipe(debug({title: 'sass changed:'}))
-        .pipe($.sourcemaps.init())
-        .pipe($.sass(SASS_OPTS))
-        // Pass the compiled sass through the prefixer with defined
-        .pipe($.autoprefixer({
-            browsers: AUTOPREFIXER_BROWSERS,
-            cascade: !prod
-        }))
-        .pipe($.if('*.css', $.cssmin()))
-        .pipe($.sourcemaps.write('../' + path.buildMap, {
-            includeContent: true
-        }))
-        .pipe(gulp.dest(DEST_DIR))
-        .pipe(livereload())
-        .pipe(browserSyncReload({stream: true}));
-};
-
-
-// Sass - Build
-gulp.task('build:sass', ['clean'], sassFunc);
-
-// Sass - Task
-gulp.task('sass', sassFunc);
-
-// Sass - Watch for Sass generation
-gulp.task('watch:sass', ['sass'], function (cb) {
-    gulp.watch(src.sass, {cwd: path.sass}, sassFunc);
-    cb();
-});
-
 /**
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Vulcanize TASKS
@@ -376,9 +303,9 @@ gulp.task('watch:sass', ['sass'], function (cb) {
 
 // Vulcanize - Internal
 var vulcanizeFunc = function (cb) {
-    var DEST_DIR = path.buildVulcanized+'/elements/' ;
+    var DEST_DIR = path.buildVulcanized + '/elements/';
     console.log('Vulcanize isErrorEatByWatch = ', isErrorEatByWatch);
-    return gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
+      gulp.src('elements/elements.html', {cwd: path.app, base: path.app})
         //.pipe(cache('vulcanizingDD')) // NOT WORKING BUT WHY ?
         .pipe($.if(isErrorEatByWatch, $.plumber({errorHandler: errorNotif('Vulcanize Error')})))
         .pipe(debug({title: 'vulcanize :'}))
@@ -393,23 +320,25 @@ var vulcanizeFunc = function (cb) {
         }))
         .pipe($.crisper())
         .pipe($.debug({title: 'vulcanize crisper :'}))
-        .pipe($.size() )
-  //      .pipe(debug({title: 'vulcanize htmlMinifier :'}))
-  //      .pipe($.htmlMinifier({collapseWhitespace: true}))
-  //      .pipe($.size() )
+        .pipe($.size())
+        //      .pipe(debug({title: 'vulcanize htmlMinifier :'}))
+        //      .pipe($.htmlMinifier({collapseWhitespace: true}))
+        //      .pipe($.size() )
 //        .pipe($.if('*.html', $.htmlMinifier({})))
- //       .pipe($.debug({title: 'vulcanize Save :'}))
+        //       .pipe($.debug({title: 'vulcanize Save :'}))
         .pipe(gulp.dest(DEST_DIR))
         .pipe(livereload());
+
+    cb();
     //  .pipe(browserSyncReload({stream: true}));
 };
 
 
 // Vulcanize - build
-gulp.task('build:vulcanize', ['build:sass', 'build:cp', 'build:images'], vulcanizeFunc);
+gulp.task('build:vulcanize', ['build:cp', 'build:images'], vulcanizeFunc);
 
 // Vulcanize - Tasks
-gulp.task('vulcanize', ['sass', 'cp', 'images'], vulcanizeFunc);
+gulp.task('vulcanize', ['cp', 'images'], vulcanizeFunc);
 
 // Vulcanize - Watch for html files
 gulp.task('watch:vulcanize', ['vulcanize'], function (cb) {
@@ -418,141 +347,38 @@ gulp.task('watch:vulcanize', ['vulcanize'], function (cb) {
     cb();
 });
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//  Chrome App TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Browserify TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-//var bundler = watchify(browserify('./src/index.js', watchify.args));
-//// add any other browserify options or transforms here
-//bundler.transform('brfs');
-//
-//gulp.task('js', bundle); // so you can run `gulp js` to build the file
-//bundler.on('update', bundle); // on any dep update, runs the bundler
-//
-//function bundle() {
-//  return bundler.bundle()
-//    // log errors if they happen
-//    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-//    .pipe(source('bundle.js'))
-//    // optional, remove if you dont want sourcemaps
-//    .pipe(buffer())
-//    .pipe(sourcemaps.init({loadMaps: true})) // loads map from browserify file
-//    .pipe(sourcemaps.write('./')) // writes .map file
-//    //
-//    .pipe(gulp.dest('./dist'));
-//}
-//
-
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Browsers TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var server = {
-    httpHost: 'localhost',
-    httpPort: '9000',
-    httpsHost: 'localhost',
-    httpsPort: '9001'
-};
-
-// Server Livereload - Test
-gulp.task('connect2', function () {
-    var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
-    var connect = require('gulp-connect');
-    // var cros = require('connect-cors');
-    connect.server({
-        root: srcApp,
-        port: 9000,
-        middleware: function (connect, o) {
-            return [
-                (function () {
-                    var url = require('url');
-                    var proxy = require('proxy-middleware');
-                    var options = url.parse('http://localhost:8000/s');
-                    options.route = 's';
-                    return proxy(options);
-                })
-                ()];
-        }
-    });
-});
-
-// Server Livereload
-gulp.task('connect', function () {
-    // http://stackoverflow.com/questions/24546450/use-proxy-middleware-with-gulp-connect
-    var serveStatic = require('serve-static');
-    var serveIndex = require('serve-index');
-    var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
-    // Proxy Options
-    var fs = require('fs');
-    var url = require('url');
-    var proxyOptions = url.parse('http://127.0.0.1:8000/s/');
-    proxyOptions.route = '/s/';
-
-
-    // Connect Configuration
-    var app = require('connect')()
-        //  .use(require('connect-modrewrite')(['^/s/(.*)$ http://localhost:8000/s/$1 [P]']))
-        .use(require('proxy-middleware')(proxyOptions))
-        // .use(require('cors')({origin: 'http://127.0.0.1:8000', methods: ['HEAD', 'GET', 'POST']}))
-        .use(require('connect-livereload')({port: 35729}))
-//    .use(serveStatic('.tmp'))
-        .use(serveStatic(srcApp))
-        // paths to bower_components should be relative to the current file
-        //  .use('/bower_components', serveStatic('bower_components'))
-        .use(serveIndex(srcApp));
-
-    // Https Option
-    var tlsOptions = {
-        key: fs.readFileSync('../docker/nginx-spdy/build/ssl/server.key', 'utf8'),
-        cert: fs.readFileSync('../docker/nginx-spdy/build/ssl/server.crt', 'utf8')
-    };
-    require('https').createServer(tlsOptions, app).listen(server.httpsPort).on('listening', function () {
-        console.log('Started connect web server on https://' + server.httpsHost + ':' + server.httpsPort + ' on directory ' + srcApp);
-    });
-    // Http Server
-    require('http').createServer(app)
-        .listen(server.httpPort)
-        .on('listening', function () {
-            console.log('Started connect web server on http://' + server.httpHost + ':' + server.httpPort + ' on directory ' + srcApp);
-        });
-});
-
-// Start liveReload Server. Options : --build
-gulp.task('serveLR', ['connect', 'watch'], function () {
-    return require('opn')('http://' + server.httpHost + ':' + server.httpPort);
-});
 
 
 // Start CSS Injection Server. Options : --build
 gulp.task('serve', ['watch'], function () {
-    // Proxy Server
-    // -------------
-    var url = require('url');
-    var proxy = require('proxy-middleware');
-    var proxyOptions = url.parse('http://127.0.0.1:8000/s/');
-    proxyOptions.route = '/s/';
-    var proxies = [proxy(proxyOptions)];
     // browserSync Server
     // ------------------
     var srcApp = gutil.env.build ? path.buildVulcanized : path.app;
     // https://github.com/BrowserSync/gulp-browser-sync/issues/16#issuecomment-43597240
     browserSync({
+        //browserSync.init({
         server: {
             baseDir: srcApp,
-            online: false,
-            middleware: proxies,
-            notify: false,
             logLevel: 'info'
         }
     });
 });
 
-
+gulp.task('serve2',  ['watch'],function () {
+    // browserSync Server
+    // ------------------
+    //browserSync({
+    browserSync.init({
+        notify: false,
+        server: {
+            baseDir: './web'
+        }
+    });
+});
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Dist TASKS
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

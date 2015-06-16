@@ -1,0 +1,50 @@
+<link rel="import" href="../polymer/polymer.html">
+
+
+<!--
+
+The `nfcmim-app` provides  
+
+@group nfcmim-app Elements
+@element nfcmim-app
+@demo demo/index.html
+-->
+
+<dom-module id="nfcmim-app">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <more-route-selector>
+            <neon-animated-pages attr-for-selected="route" selected="{{pageSelected}}" >
+                <div route="home">Home</div>
+                <div route="chat">Chat</div>
+                <div route="reader">Reader</div>
+                <div route="card">Card</div>
+            </neon-animated-pages>
+        </more-route-selector>
+
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfcmim-app',
+
+            properties: {
+                pageSelected: {
+                    type: String,
+                    value: 'home',
+                    notify: true
+                }
+            }
+
+        });
+    })();
+</script>
