@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
 <!--
@@ -24,7 +24,9 @@ The `nfcmim-app` provides
                     <div>Home</div>
                     <nfcmin-menu></nfcmin-menu>
                 </div>
-                <div route="chat">Chat</div>
+                <div route="chat">
+                    <nfcmin-chat></nfcmin-chat>
+                </div>
                 <div route="reader">Reader</div>
                 <div route="card">Card</div>
             </neon-animated-pages>
@@ -43,7 +45,6 @@ The `nfcmim-app` provides
             properties: {
                 pageSelected: {
                     type: String,
-                    value: 'home',
                     notify: true
                 }
             }

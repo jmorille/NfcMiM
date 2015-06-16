@@ -156,7 +156,7 @@ gulp.task('watch', ['cp:watch', 'watch:images', 'watch:vulcanize'], function (cb
     console.log('watch isErrorEatByWatch before', isErrorEatByWatch);
     isErrorEatByWatch = true;
     console.log('watch isErrorEatByWatch after', isErrorEatByWatch);
-   // livereload.listen();
+    // livereload.listen();
     cb();
 });
 
@@ -327,11 +327,14 @@ var vulcanizeFunc = function (cb) {
 //        .pipe($.if('*.html', $.htmlMinifier({})))
         //       .pipe($.debug({title: 'vulcanize Save :'}))
         .pipe(gulp.dest(DEST_DIR))
-       // .pipe(livereload())
+    // .pipe(livereload())
 
 
-
-     cb();
+    if (typeof cb === 'function') {
+        cb();
+    } else {
+        console.log('--- cb not a function :', cb);
+    }
     //  .pipe(browserSyncReload({stream: true}));
 };
 
@@ -370,7 +373,7 @@ gulp.task('serve', ['watch'], function () {
     });
 });
 
-gulp.task('serve2',  ['watch'],function () {
+gulp.task('serve2', ['watch'], function () {
     // browserSync Server
     // ------------------
     //browserSync({

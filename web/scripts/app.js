@@ -1,15 +1,7 @@
 (function (window, document) {
     'use strict';
 
-//  var navigator = window.navigator;
-    // Install Service Worker
-    //if (navigator.serviceWorker) {
-    //  navigator.serviceWorker.register('/worker.js').then(function (reg) {
-    //    console.log('◕‿◕', reg);
-    //  }, function (err) {
-    //    console.log('ಠ_ಠ', err);
-    //  });
-    //};
+
 
     // Polymer Ready Event
     document.addEventListener('WebComponentsReady', function () {
@@ -20,11 +12,6 @@
     });
 
 
-    // Plugin Events
-    document.addEventListener("deviceready", onDeviceReady, false);
-    function onDeviceReady() {
-        console.log('Plugins contacts : ', navigator.contacts !== undefined);
-    }
 
 
 // wrap document so it plays nice with other libraries
