@@ -136,6 +136,18 @@ The `nfcmin-chat` provides
                     chrome.bluetoothSocket.connect(createInfo.socketId, device.address, that.uuid, onConnectedCallback);
                 });
             },
+
+            // --- Register
+            // --- ---------------------
+
+            _registerReceiveListener: function () {
+                var receiveListener = this.receiveMessage.bind(this);
+                var errorListener = this.receiveError.bind(this);
+
+                chrome.bluetoothSocket.onRecieve.addListener(receiveListener);
+                chrome.bluetoothSocket.onReceiveError.addListener(errorListener);
+            },
+
             // --- Close
             // --- ---------------------
             disconnect: function () {
@@ -150,18 +162,7 @@ The `nfcmin-chat` provides
                 }
             },
 
-            // --- Register
-            // --- ---------------------
-
-            _registerReceiveListener: function () {
-                var receiveListener = this.receiveMessage.bind(this);
-                var errorListener = this.receiveError.bind(this);
-
-                chrome.bluetoothSocket.onRecieve.addListener(receiveListener);
-                chrome.bluetoothSocket.onReceiveError.addListener(errorListener);
-            },
-
-
+            
             // --- Receiver
             // --- ---------------------
 
