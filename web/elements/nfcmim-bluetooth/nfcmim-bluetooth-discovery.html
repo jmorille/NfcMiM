@@ -1,0 +1,114 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+    
+<!--
+
+The `nfcmim-bluetooth-discovery` provides  
+
+@group nfcmim-bluetooth-discovery Elements
+@element nfcmim-bluetooth-discovery
+@demo demo/index.html
+-->
+
+<dom-module id="nfcmim-bluetooth-discovery">
+
+    <style>
+        :host {
+            display: block;
+        }
+
+        .line {
+
+        }
+
+    </style>
+    <template>
+        <template is="dom-repeat" items="[[devices]]" as="device">
+            <div>
+                <span>[[device.name]]</span>
+                <span>[[device.address]]</span>
+            </div>
+        </template>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfcmim-bluetooth-discovery',
+
+            properties: {
+                devices: {
+                    type: Array,
+                    notify: true,
+                    value: function () {
+                        return [
+                            {name: "test", address: "00:ZZZ:EEEE"},
+                            {name: "test", address: "00:ZZZ:EEEE"}
+                        ];
+                    }
+                }
+            },
+
+
+            _addDevice: function (device) {
+                this.deviceName[device.address] = device;
+                this.notifyPath('deviceName.' + device.address, device);
+                this.push('devices', device);
+                console.log('Add', device.address, device.name);
+            },
+            _removeDevice: function (device) {
+                delete this.deviceName[device.address];
+
+                // TODO this.slice('devices', device);
+
+                this.notifyPath('deviceName.' + device.address, undefined);
+            },
+            /**
+             * Bluetooth Doc : https://developer.chrome.com/apps/app_bluetooth
+             */
+            startDiscovery: function () {
+                var that = this;
+                console.log('list device ', chrome);
+                chrome.bluetooth.getAdapterState(function (adapter) {
+                    console.log("Adapter " + adapter.address + ": " + adapter.name);
+                });
+                // Add listeners to receive newly found devices and updates
+                // to the previously known devices.
+                var addDevice = this._addDevice.bind(this);
+                var removeDevice = this._removeDevice.bind(this);
+                chrome.bluetooth.onDeviceAdded.addListener(addDevice);
+                chrome.bluetooth.onDeviceChanged.addListener(addDevice);
+                chrome.bluetooth.onDeviceRemoved.addListener(removeDevice);
+
+                // With the listeners in place, get the list of devices found in
+                // previous discovery sessions, or any currently active ones,
+                // along with paired devices.
+                chrome.bluetooth.getDevices(function (devices) {
+                    for (var i = 0; i < devices.length; i++) {
+                        that._addDevice(devices[i]);
+                    }
+                });
+                // Now begin the discovery process.
+                chrome.bluetooth.startDiscovery(function () {
+                    // Stop discovery after 30 seconds.
+                    setTimeout(function () {
+                        chrome.bluetooth.stopDiscovery(function () {
+                            chrome.bluetooth.onDeviceAdded.removeListener(addDevice);
+                            chrome.bluetooth.onDeviceAdded.removeListener(removeDevice);
+                        });
+                    }, 30000);
+                });
+            },
+
+            _handleSelectDevice: function (event) {
+                // TODO  this.connectToDevice(device);
+                this.set('devices', [] );
+            },
+
+
+        });
+    })();
+</script>

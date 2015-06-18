@@ -1,16 +1,18 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
+
+
 <!--
 
-The `nfcmin-chat` provides  
+The `nfcmim-bluetooth` provides  
 
-@group nfcmin-chat Elements
-@element nfcmin-chat
+@group nfcmim-bluetooth Elements
+@element nfcmim-bluetooth
 @demo demo/index.html
 -->
 
-<dom-module id="nfcmin-chat">
+<dom-module id="nfcmim-bluetooth">
 
     <style>
         :host {
@@ -18,14 +20,7 @@ The `nfcmin-chat` provides
         }
     </style>
     <template>
-        <h1 on-tap="startDiscovery">Chat</h1>
-        <template is="dom-repeat" items="[[devices]]" as="device">
-            <div>
-                <span>[[device.name]]</span>
-                <span>[[device.address]]</span>
-            </div>
-        </template>
-
+        <content></content>
     </template>
 </dom-module>
 
@@ -34,7 +29,7 @@ The `nfcmin-chat` provides
         'use strict';
 
         Polymer({
-            is: 'nfcmin-chat',
+            is: 'nfcmim-bluetooth',
 
             properties: {
                 uuid: {
@@ -45,71 +40,29 @@ The `nfcmin-chat` provides
                 socketId: {
                     type: Number,
                     notify: true
-                },
-                devices: {
-                    type: Array,
-                    notify: true,
-                    value: function () {
-                        return [
-                            {name: "test", address: "00:ZZZ:EEEE"},
-                            {name: "test", address: "00:ZZZ:EEEE"}
-                        ];
-                    }
-                },
-                deviceName: {
-                    type: Object,
-                    notify: true,
-                    value: function () {
-                        return {};
-                    }
                 }
             },
-            _addDevice: function (device) {
-                this.deviceName[device.address] = device;
-                this.notifyPath('deviceName.' + device.address, device);
-                this.push('devices', device);
-                console.log('Add', device.address, device.name);
-            },
-            _removeDevice: function (device) {
-                delete this.deviceName[device.address];
 
-                // TODO this.slice('devices', device);
+            // --- Life Cycle
+            // --- ---------------------
 
-                this.notifyPath('deviceName.' + device.address, undefined);
+            ready: function () {
+                this._registerReceiveListener();
             },
-            /**
-             * Bluetooth Doc : https://developer.chrome.com/apps/app_bluetooth
-             */
-            startDiscovery: function () {
-                var that = this;
-                console.log('list device ', chrome);
-                chrome.bluetooth.getAdapterState(function (adapter) {
-                    console.log("Adapter " + adapter.address + ": " + adapter.name);
-                });
-                // Add listeners to receive newly found devices and updates
-                // to the previously known devices.
-                var addDevice = this._addDevice.bind(this);
-                chrome.bluetooth.onDeviceAdded.addListener(addDevice);
-                chrome.bluetooth.onDeviceChanged.addListener(addDevice);
-                chrome.bluetooth.onDeviceRemoved.addListener(this._removeDevice.bind(this));
 
-                // With the listeners in place, get the list of devices found in
-                // previous discovery sessions, or any currently active ones,
-                // along with paired devices.
-                chrome.bluetooth.getDevices(function (devices) {
-                    for (var i = 0; i < devices.length; i++) {
-                        that._addDevice(devices[i]);
-                    }
-                });
-                // Now begin the discovery process.
-                chrome.bluetooth.startDiscovery(function () {
-                    // Stop discovery after 30 seconds.
-                    setTimeout(function () {
-                        chrome.bluetooth.stopDiscovery(function () {
-                        });
-                    }, 30000);
-                });
+
+            _registerReceiveListener: function () {
+                var receiveListener = this.receiveMessage.bind(this);
+                var errorListener = this.receiveError.bind(this);
+
+                chrome.bluetoothSocket.onRecieve.addListener(receiveListener);
+                chrome.bluetoothSocket.onReceiveError.addListener(errorListener);
             },
+
+
+
+            // --- Connection
+            // --- ---------------------
 
             _handleSelectDevice: function (event) {
                 // TODO  this.connectToDevice(device);
@@ -135,18 +88,7 @@ The `nfcmin-chat` provides
                 });
             },
 
-            // --- Register
-            // --- ---------------------
-
-            _registerReceiveListener: function () {
-                var receiveListener = this.receiveMessage.bind(this);
-                var errorListener = this.receiveError.bind(this);
-
-                chrome.bluetoothSocket.onRecieve.addListener(receiveListener);
-                chrome.bluetoothSocket.onReceiveError.addListener(errorListener);
-            },
-
-            // --- Close
+            // --- Disconnect
             // --- ---------------------
             disconnect: function () {
                 var that = this;
@@ -158,8 +100,24 @@ The `nfcmin-chat` provides
                     });
                 }
             },
-
-
+            // --- ArrayBuffer Decoder/Encoder
+            // --- ---------------------
+            decodeArrayBuffer: function (arrayBuffer, encoding) {
+                encoding = encoding || 'utf-8';
+                // The decode() method takes a DataView as a parameter, which is a wrapper on top of the ArrayBuffer.
+                var dataView = new DataView(arrayBuffer);
+                // The TextDecoder interface is documented at http://encoding.spec.whatwg.org/#interface-textdecoder
+                var decoder = new TextDecoder(encoding);
+                var decodedString = decoder.decode(dataView);
+                return decodedString;
+            },
+            encodeArrayBuffer: function (messageString, encoding) {
+                encoding = encoding || 'utf-8';
+                var encoder = new TextEncoder(encoding);
+                var uint8array = encoder.encode(messageString);
+                return uint8array;
+            },
+            
             // --- Receiver
             // --- ---------------------
 
