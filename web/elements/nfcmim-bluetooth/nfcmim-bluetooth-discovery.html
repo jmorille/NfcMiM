@@ -24,7 +24,7 @@ The `nfcmim-bluetooth-discovery` provides
     </style>
     <template>
         <template is="dom-repeat" items="[[devices]]" as="device">
-            <div>
+            <div on-tap="_handleSelectDevice">
                 <span>[[device.name]]</span>
                 <span>[[device.address]]</span>
             </div>
@@ -52,6 +52,12 @@ The `nfcmim-bluetooth-discovery` provides
                 }
             },
 
+            _getDeviceByAdress: function (address) {
+                var deviceFilter = this.devices.filter(function(item){
+                   return item.address ===  address;
+                });
+                return deviceFilter[0];
+            },
 
             _addDevice: function (device) {
                 this.deviceName[device.address] = device;
