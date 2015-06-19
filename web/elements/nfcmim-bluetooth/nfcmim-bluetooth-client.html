@@ -20,7 +20,7 @@ The `nfcmim-bluetooth` provides
         }
     </style>
     <template>
-        <nfcmim-bluetooth-discovery></nfcmim-bluetooth-discovery>
+        <nfcmim-bluetooth-discovery id="discovery"></nfcmim-bluetooth-discovery>
     </template>
 </dom-module>
 
@@ -59,7 +59,12 @@ The `nfcmim-bluetooth` provides
                 chrome.bluetoothSocket.onReceiveError.addListener(errorListener);
             },
 
+            // --- Api
+            // --- ---------------------
 
+            connect: function () {
+
+            },
 
             // --- Connection
             // --- ---------------------
