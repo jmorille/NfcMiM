@@ -1,0 +1,165 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+
+
+<!--
+
+The `nfcmim-bluetooth` provides  
+
+@group nfcmim-bluetooth Elements
+@element nfcmim-bluetooth
+@demo demo/index.html
+-->
+
+<dom-module id="nfcmim-bluetooth-client">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <nfcmim-bluetooth-discovery></nfcmim-bluetooth-discovery>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfcmim-bluetooth-client',
+
+            properties: {
+                uuid: {
+                    type: String,
+                    notify: true,
+                    value: '1105'
+                },
+                socketId: {
+                    type: Number,
+                    notify: true
+                }
+            },
+
+            // --- Life Cycle
+            // --- ---------------------
+
+            ready: function () {
+                this._registerReceiveListener();
+            },
+
+
+            _registerReceiveListener: function () {
+                var receiveListener = this.receiveMessage.bind(this);
+                var errorListener = this.receiveError.bind(this);
+
+                chrome.bluetoothSocket.onRecieve.addListener(receiveListener);
+                chrome.bluetoothSocket.onReceiveError.addListener(errorListener);
+            },
+
+
+
+            // --- Connection
+            // --- ---------------------
+
+            _handleSelectDevice: function (event) {
+                // TODO  this.connectToDevice(device);
+            },
+
+            connectToDevice: function (device) {
+                var that = this;
+                // Create Socket
+                chrome.bluetoothSocket.create(function (createInfo) {
+                    // Callback action
+                    var onConnectedCallback = function () {
+                        if (chrome.runtime.lastError) {
+                            console.log("Connection failed: " + chrome.runtime.lastError.message);
+                        } else {
+                            // Profile implementation here.
+                            that.socketId = createInfo.socketId;
+                            // Register the Message listener
+                            that._registerReceiveListener();
+                        }
+                    };
+                    // Connect to the Socket
+                    chrome.bluetoothSocket.connect(createInfo.socketId, device.address, that.uuid, onConnectedCallback);
+                });
+            },
+
+            // --- Disconnect
+            // --- ---------------------
+            disconnect: function () {
+                var that = this;
+                if (this.socketId) {
+                    // Api: https://developer.chrome.com/apps/bluetoothSocket#method-disconnect
+                    chrome.bluetoothSocket.disconnect(this.socketId, function () {
+                        that.socketId = null;
+                        // TODO Unregister listener
+                    });
+                }
+            },
+            // --- ArrayBuffer Decoder/Encoder
+            // --- ---------------------
+            decodeArrayBuffer: function (arrayBuffer, encoding) {
+                encoding = encoding || 'utf-8';
+                // The decode() method takes a DataView as a parameter, which is a wrapper on top of the ArrayBuffer.
+                var dataView = new DataView(arrayBuffer);
+                // The TextDecoder interface is documented at http://encoding.spec.whatwg.org/#interface-textdecoder
+                var decoder = new TextDecoder(encoding);
+                var decodedString = decoder.decode(dataView);
+                return decodedString;
+            },
+            encodeArrayBuffer: function (messageString, encoding) {
+                encoding = encoding || 'utf-8';
+                var encoder = new TextEncoder(encoding);
+                var uint8array = encoder.encode(messageString);
+                return uint8array;
+            },
+            
+            // --- Receiver
+            // --- ---------------------
+
+            receiveMessage: function (receiveInfo) {
+                if (receiveInfo.socketId != this.socketId) {
+                    return;
+                }
+                // receiveInfo.data is an ArrayBuffer.
+            },
+
+            receiveError: function (errorInfo) {
+                // Cause is in errorInfo.error.
+                console.log(errorInfo.errorMessage);
+            },
+
+
+            // --- Sender
+            // --- ---------------------
+            send: function (message) {
+                var that = this;
+                if (!this.socketId) {
+                    console.warn('No current bluetooth connection');
+                    return;
+                }
+                // Message
+                var arrayBuffer;
+                if (typeof message === 'string') {
+                    // Convert String to arrayBuffer
+                } else {
+                    arrayBuffer = message;
+                }
+                // Send message
+                chrome.bluetoothSocket.send(that.socketId, arrayBuffer, function (bytes_sent) {
+                    if (chrome.runtime.lastError) {
+                        console.log("Send failed: " + chrome.runtime.lastError.message);
+                    } else {
+                        console.log("Sent " + bytes_sent + " bytes")
+                    }
+                });
+            }
+
+
+        });
+    })();
+</script>

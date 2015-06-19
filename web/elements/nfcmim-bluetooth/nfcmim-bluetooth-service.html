@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+    
+<!--
+
+The `nfcmim-bluetooth-service` provides  
+
+@group nfcmim-bluetooth-service Elements
+@element nfcmim-bluetooth-service
+@demo demo/index.html
+-->
+
+<dom-module id="nfcmim-bluetooth-service">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <content></content>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfcmim-bluetooth-service',
+
+            properties: {
+                uuid: {
+                    type: String,
+                    notify: true,
+                    value: '1105'
+                },
+                socketId: {
+                    type: Number,
+                    notify: true
+                }
+            },
+
+
+            // --- Accepting client connections
+            // --- ---------------------
+
+            _acceptConnection: function () {
+                var that = this;
+                chrome.bluetoothSocket.create(function(createInfo) {
+                    var onListenCallback = function () {
+
+                    };
+                    chrome.bluetoothSocket.listenUsingRfcomm(createInfo.socketId,
+                            that.uuid, onListenCallback);
+                });
+
+
+
+                chrome.bluetoothSocket.onAccept.addListener(function(acceptInfo) {
+                    if (info.socketId != serverSocketId)
+                        return;
+
+                    // Say hello...
+                    chrome.bluetoothSocket.send(acceptInfo.clientSocketId,
+                            data, onSendCallback);
+
+                    // Accepted sockets are initially paused,
+                    // set the onReceive listener first.
+                    chrome.bluetoothSocket.onReceive.addListener(onReceive);
+                    chrome.bluetoothSocket.setPaused(false);
+                });
+            },
+
+        });
+    })();
+</script>
