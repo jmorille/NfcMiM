@@ -11,7 +11,7 @@ The `nfcmin-menu` provides
 @demo demo/index.html
 -->
 
-<dom-module id="nfcmin-menu">
+<dom-module id="nfcmim-menu">
 
     <style>
         :host {
@@ -20,11 +20,20 @@ The `nfcmin-menu` provides
     </style>
     <template>
 
-        <paper-menu class="list">
-            <paper-item on-tap="_onTapMenu" route="home">Home</paper-item>
-            <paper-item on-tap="_onTapMenu" route="chat">Chat</paper-item>
-            <paper-item on-tap="_onTapMenu" route="reader">Reader</paper-item>
-            <paper-item on-tap="_onTapMenu" route="card">Card</paper-item>
+        <paper-menu class="list"  attr-for-selected="route">
+            <paper-icon-item on-tap="_onTapMenu" route="home">
+                <iron-icon icon="inbox" item-icon></iron-icon> Home
+            </paper-icon-item>
+
+            <paper-icon-item on-tap="_onTapMenu" route="chat">
+                <iron-icon icon="inbox" item-icon></iron-icon> Chat
+            </paper-icon-item>
+            <paper-icon-item on-tap="_onTapMenu" route="reader">
+                <iron-icon icon="inbox" item-icon></iron-icon> Reader
+            </paper-icon-item>
+            <paper-icon-item on-tap="_onTapMenu" route="card">
+                <iron-icon icon="inbox" item-icon></iron-icon> Card
+            </paper-icon-item>
         </paper-menu>
 
     </template>
@@ -35,7 +44,7 @@ The `nfcmin-menu` provides
         'use strict';
 
         Polymer({
-            is: 'nfcmin-menu',
+            is: 'nfcmim-menu',
 
             properties: {},
 

@@ -14,19 +14,22 @@ The `nfcmin-chat` provides
 
     <style>
         :host {
-            display: block;
+            display: block
         }
     </style>
     <template>
-        <h1 on-tap="startDiscovery">Chat</h1>
-        <template is="dom-repeat" items="[[devices]]" as="device">
-            <div>
-                <span>[[device.name]]</span>
-                <span>[[device.address]]</span>
-            </div>
+        <nfcmim-layout >
+            <h1 on-tap="startDiscovery">Chat</h1>
+            <template is="dom-repeat" items="[[devices]]" as="device">
+                <paper-material elevation="1">
+                    <article>
+                        <span>[[device.name]]</span>
+                        <span>[[device.address]]</span>
+                    </article>
+                </paper-material>
+            </template>
+        </nfcmim-layout>
 
-
-        </template>
 
     </template>
 </dom-module>
@@ -65,7 +68,7 @@ The `nfcmin-chat` provides
                         return {};
                     }
                 }
-            }
+            },
             _addDevice: function (device) {
                 this.deviceName[device.address] = device;
                 this.notifyPath('deviceName.' + device.address, device);
@@ -152,7 +155,6 @@ The `nfcmin-chat` provides
             // --- ---------------------
             disconnect: function () {
                 var that = this;
-                )
                 if (this.socketId) {
                     // Api: https://developer.chrome.com/apps/bluetoothSocket#method-disconnect
                     chrome.bluetoothSocket.disconnect(this.socketId, function () {
@@ -162,7 +164,7 @@ The `nfcmin-chat` provides
                 }
             },
 
-            
+
             // --- Receiver
             // --- ---------------------
 

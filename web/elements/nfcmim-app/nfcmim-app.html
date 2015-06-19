@@ -16,13 +16,15 @@ The `nfcmim-app` provides
         :host {
             display: block;
         }
+        neon-animated-pages  {
+            height: 100vh;
+        }
     </style>
     <template>
         <more-route-selector>
             <neon-animated-pages attr-for-selected="route" selected="{{pageSelected}}">
                 <div route="home">
-                    <div>Home</div>
-                    <nfcmin-menu></nfcmin-menu>
+                    <nfcmim-home></nfcmim-home>
                 </div>
                 <div route="chat">
                     <nfcmin-chat></nfcmin-chat>

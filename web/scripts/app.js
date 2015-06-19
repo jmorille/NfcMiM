@@ -7,7 +7,7 @@
     document.addEventListener('WebComponentsReady', function () {
         // Perform some behaviour
         // console.log('Polymer is ready to rock!');
-        console.log('%cWelcome to Red Sms!\n%cPrivate communication is the begin of the true liberty',
+        console.log('%cWelcome to Nfc Man In The Middle!\n%cPrivate communication is the begin of the true liberty',
             'font-size:1.5em;color:#4558c9;', 'color:#d61a7f;font-size:1em;');
     });
 
