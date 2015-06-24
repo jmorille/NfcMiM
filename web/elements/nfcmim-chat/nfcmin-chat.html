@@ -18,17 +18,18 @@ The `nfcmin-chat` provides
         }
     </style>
     <template>
-        <nfcmim-layout >
+        <nfcmim-layout>
             <h1 on-tap="startDiscovery">Chat</h1>
-            <template is="dom-repeat" items="[[devices]]" as="device">
+            <template is="dom-repeat" items="[[messages]]" as="item">
                 <paper-material elevation="1">
                     <article>
-                        <span>[[device.name]]</span>
-                        <span>[[device.address]]</span>
+                        <span>[[item.from]]</span>
+                        <span>[[item.message]]</span>
                     </article>
                 </paper-material>
             </template>
         </nfcmim-layout>
+
 
 
 
@@ -52,128 +53,36 @@ The `nfcmin-chat` provides
                     type: Number,
                     notify: true
                 },
-                devices: {
+                messages: {
                     type: Array,
                     notify: true,
                     value: function () {
                         return [
-                            {name: "test", address: "00:ZZZ:EEEE"},
-                            {name: "test", address: "00:ZZZ:EEEE"}
+                            {from: "test", message: "00:ZZZ:EEEE"},
+                            {from: "test", message: "00:ZZZ:EEEE"}
                         ];
                     }
-                },
-                deviceName: {
-                    type: Object,
-                    notify: true,
-                    value: function () {
-                        return {};
-                    }
                 }
-            },
-            _addDevice: function (device) {
-                this.deviceName[device.address] = device;
-                this.notifyPath('deviceName.' + device.address, device);
-                this.push('devices', device);
-                console.log('Add', device.address, device.name);
-            },
-            _removeDevice: function (device) {
-                delete this.deviceName[device.address];
-
-                // TODO this.slice('devices', device);
-
-                this.notifyPath('deviceName.' + device.address, undefined);
             },
             /**
              * Bluetooth Doc : https://developer.chrome.com/apps/app_bluetooth
              */
             startDiscovery: function () {
-                var that = this;
-                console.log('list device ', chrome);
-                chrome.bluetooth.getAdapterState(function (adapter) {
-                    console.log("Adapter " + adapter.address + ": " + adapter.name);
-                });
-                // Add listeners to receive newly found devices and updates
-                // to the previously known devices.
-                var addDevice = this._addDevice.bind(this);
-                chrome.bluetooth.onDeviceAdded.addListener(addDevice);
-                chrome.bluetooth.onDeviceChanged.addListener(addDevice);
-                chrome.bluetooth.onDeviceRemoved.addListener(this._removeDevice.bind(this));
 
-                // With the listeners in place, get the list of devices found in
-                // previous discovery sessions, or any currently active ones,
-                // along with paired devices.
-                chrome.bluetooth.getDevices(function (devices) {
-                    for (var i = 0; i < devices.length; i++) {
-                        that._addDevice(devices[i]);
-                    }
-                });
-                // Now begin the discovery process.
-                chrome.bluetooth.startDiscovery(function () {
-                    // Stop discovery after 30 seconds.
-                    setTimeout(function () {
-                        chrome.bluetooth.stopDiscovery(function () {
-                        });
-                    }, 30000);
-                });
             },
 
             _handleSelectDevice: function (event) {
                 // TODO  this.connectToDevice(device);
             },
 
-            connectToDevice: function (device) {
-                var that = this;
-                // Create Socket
-                chrome.bluetoothSocket.create(function (createInfo) {
-                    // Callback action
-                    var onConnectedCallback = function () {
-                        if (chrome.runtime.lastError) {
-                            console.log("Connection failed: " + chrome.runtime.lastError.message);
-                        } else {
-                            // Profile implementation here.
-                            that.socketId = createInfo.socketId;
-                            // Register the Message listener
-                            that._registerReceiveListener();
-                        }
-                    };
-                    // Connect to the Socket
-                    chrome.bluetoothSocket.connect(createInfo.socketId, device.address, that.uuid, onConnectedCallback);
-                });
-            },
 
-            // --- Register
-            // --- ---------------------
-
-            _registerReceiveListener: function () {
-                var receiveListener = this.receiveMessage.bind(this);
-                var errorListener = this.receiveError.bind(this);
-
-                chrome.bluetoothSocket.onRecieve.addListener(receiveListener);
-                chrome.bluetoothSocket.onReceiveError.addListener(errorListener);
-            },
-
-            // --- Close
-            // --- ---------------------
-            disconnect: function () {
-                var that = this;
-                if (this.socketId) {
-                    // Api: https://developer.chrome.com/apps/bluetoothSocket#method-disconnect
-                    chrome.bluetoothSocket.disconnect(this.socketId, function () {
-                        that.socketId = null;
-                        // TODO Unregister listener
-                    });
-                }
-            },
 
 
             // --- Receiver
             // --- ---------------------
 
             receiveMessage: function (receiveInfo) {
-                if (receiveInfo.socketId != this.socketId) {
-                    return;
-                }
-                // receiveInfo.data is an ArrayBuffer.
+
             },
 
             receiveError: function (errorInfo) {
@@ -185,26 +94,7 @@ The `nfcmin-chat` provides
             // --- Sender
             // --- ---------------------
             send: function (message) {
-                var that = this;
-                if (!this.socketId) {
-                    console.warn('No current bluetooth connection');
-                    return;
-                }
-                // Message
-                var arrayBuffer;
-                if (typeof message === 'string') {
-                    // Convert String to arrayBuffer
-                } else {
-                    arrayBuffer = message;
-                }
-                // Send message
-                chrome.bluetoothSocket.send(that.socketId, arrayBuffer, function (bytes_sent) {
-                    if (chrome.runtime.lastError) {
-                        console.log("Send failed: " + chrome.runtime.lastError.message);
-                    } else {
-                        console.log("Sent " + bytes_sent + " bytes")
-                    }
-                });
+
             }
 
 
