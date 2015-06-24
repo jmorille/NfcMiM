@@ -63,7 +63,7 @@ The `nfcmim-bluetooth-discovery` provides
             },
 
             _addDevice: function (device) {
-                this.deviceName[device.address] = device;
+              // this.deviceName[device.address] = device;
                 this.notifyPath('deviceName.' + device.address, device);
                 this.push('devices', device);
                 console.log('Add', device.address, device.name);
