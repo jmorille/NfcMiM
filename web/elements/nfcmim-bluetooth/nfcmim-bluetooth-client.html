@@ -1,8 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-
-
 <!--
 
 The `nfcmim-bluetooth` provides  
@@ -20,7 +18,7 @@ The `nfcmim-bluetooth` provides
         }
     </style>
     <template>
-        <nfcmim-bluetooth-discovery id="discovery"></nfcmim-bluetooth-discovery>
+        <!--<nfcmim-bluetooth-discovery id="discovery"></nfcmim-bluetooth-discovery>-->
     </template>
 </dom-module>
 
@@ -52,6 +50,10 @@ The `nfcmim-bluetooth` provides
 
 
             _registerReceiveListener: function () {
+                if (!chrome.bluetoothSocket) {
+                    console.warn('chrome.bluetoothSocket not existing !!');
+                    return;
+                }
                 var receiveListener = this.receiveMessage.bind(this);
                 var errorListener = this.receiveError.bind(this);
 
@@ -73,7 +75,12 @@ The `nfcmim-bluetooth` provides
                 // TODO  this.connectToDevice(device);
             },
 
-            connectToDevice: function (device) {
+            connectToDevice: function (address) {
+                console.log('request connection to device ', address);
+                if (!chrome.bluetoothSocket) {
+                    console.warn('chrome.bluetoothSocket not existing !!');
+                    return;
+                }
                 var that = this;
                 // Create Socket
                 chrome.bluetoothSocket.create(function (createInfo) {
@@ -89,7 +96,7 @@ The `nfcmim-bluetooth` provides
                         }
                     };
                     // Connect to the Socket
-                    chrome.bluetoothSocket.connect(createInfo.socketId, device.address, that.uuid, onConnectedCallback);
+                    chrome.bluetoothSocket.connect(createInfo.socketId, address, that.uuid, onConnectedCallback);
                 });
             },
 
@@ -122,7 +129,7 @@ The `nfcmim-bluetooth` provides
                 var uint8array = encoder.encode(messageString);
                 return uint8array;
             },
-            
+
             // --- Receiver
             // --- ---------------------
 
@@ -130,6 +137,8 @@ The `nfcmim-bluetooth` provides
                 if (receiveInfo.socketId != this.socketId) {
                     return;
                 }
+                console.log('receive message', receiveInfo.data);
+                this.fire('message', receiveInfo.data);
                 // receiveInfo.data is an ArrayBuffer.
             },
 

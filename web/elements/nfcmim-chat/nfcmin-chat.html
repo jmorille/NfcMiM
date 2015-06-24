@@ -19,19 +19,22 @@ The `nfcmin-chat` provides
     </style>
     <template>
         <nfcmim-layout>
-            <h1 on-tap="startDiscovery">Chat</h1>
+
+            <h1 on-tap="startDiscovery">Chat c</h1>
+
             <template is="dom-repeat" items="[[messages]]" as="item">
                 <paper-material elevation="1">
-                    <article>
+                    <article on-tap="_handleSelectDevice">
                         <span>[[item.from]]</span>
                         <span>[[item.message]]</span>
                     </article>
                 </paper-material>
             </template>
+
+            <h1>service</h1>
+            <nfcmim-bluetooth id="service" on-message="handleMessage"></nfcmim-bluetooth>
+
         </nfcmim-layout>
-
-
-
 
     </template>
 </dom-module>
@@ -58,8 +61,8 @@ The `nfcmin-chat` provides
                     notify: true,
                     value: function () {
                         return [
-                            {from: "test", message: "00:ZZZ:EEEE"},
-                            {from: "test", message: "00:ZZZ:EEEE"}
+                            {from: "reader", message: "00:ZZZ:EEEE"},
+                            {from: "card", message: "00:ZZZ:EEEE"}
                         ];
                     }
                 }
@@ -68,10 +71,12 @@ The `nfcmin-chat` provides
              * Bluetooth Doc : https://developer.chrome.com/apps/app_bluetooth
              */
             startDiscovery: function () {
-
+                this.$.service.startDiscovery();
             },
 
             _handleSelectDevice: function (event) {
+                var model = event.model;
+                console.log('Select line : ', model.item);
                 // TODO  this.connectToDevice(device);
             },
 
@@ -81,8 +86,9 @@ The `nfcmin-chat` provides
             // --- Receiver
             // --- ---------------------
 
-            receiveMessage: function (receiveInfo) {
-
+            handleMessage: function (receiveInfo) {
+                var detail = event.detail;
+                this.push(detail);
             },
 
             receiveError: function (errorInfo) {
@@ -94,7 +100,7 @@ The `nfcmin-chat` provides
             // --- Sender
             // --- ---------------------
             send: function (message) {
-
+                this.$.service.send(message);
             }
 
 

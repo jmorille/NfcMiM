@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
 
-
 <!--
 
 The `nfcmin-menu` provides  
@@ -19,23 +18,26 @@ The `nfcmin-menu` provides
         }
     </style>
     <template>
-
-        <paper-menu class="list"  attr-for-selected="route">
-            <paper-icon-item on-tap="_onTapMenu" route="home">
-                <iron-icon icon="inbox" item-icon></iron-icon> Home
-            </paper-icon-item>
-
-            <paper-icon-item on-tap="_onTapMenu" route="chat">
-                <iron-icon icon="inbox" item-icon></iron-icon> Chat
-            </paper-icon-item>
-            <paper-icon-item on-tap="_onTapMenu" route="reader">
-                <iron-icon icon="inbox" item-icon></iron-icon> Reader
-            </paper-icon-item>
-            <paper-icon-item on-tap="_onTapMenu" route="card">
-                <iron-icon icon="inbox" item-icon></iron-icon> Card
-            </paper-icon-item>
-        </paper-menu>
-
+        <more-route-selector>
+            <paper-menu class="list" attr-for-selected="route">
+                <paper-icon-item on-tap="_onTapMenu" route="home">
+                    <iron-icon icon="inbox" item-icon></iron-icon>
+                    Home
+                </paper-icon-item>
+                <paper-icon-item on-tap="_onTapMenu" route="chat">
+                    <iron-icon icon="inbox" item-icon></iron-icon>
+                    Chat
+                </paper-icon-item>
+                <paper-icon-item on-tap="_onTapMenu" route="reader">
+                    <iron-icon icon="inbox" item-icon></iron-icon>
+                    Reader
+                </paper-icon-item>
+                <paper-icon-item on-tap="_onTapMenu" route="card">
+                    <iron-icon icon="inbox" item-icon></iron-icon>
+                    Card
+                </paper-icon-item>
+            </paper-menu>
+        </more-route-selector>
     </template>
 </dom-module>
 

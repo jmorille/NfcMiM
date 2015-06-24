@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 
-    
+
 <!--
 
 The `nfcmim-bluetooth` provides  
@@ -18,7 +18,10 @@ The `nfcmim-bluetooth` provides
         }
     </style>
     <template>
-        <content></content>
+        <nfcmim-bluetooth-discovery id="discovery" on-discovery="handleDiscovery"></nfcmim-bluetooth-discovery>
+        <nfcmim-bluetooth-client id="client" on-message="handleMessage"></nfcmim-bluetooth-client>
+
+        <nfcmim-bluetooth-service id="service" on-message="handleMessage"></nfcmim-bluetooth-service>
     </template>
 </dom-module>
 
@@ -29,7 +32,20 @@ The `nfcmim-bluetooth` provides
         Polymer({
             is: 'nfcmim-bluetooth',
 
-            properties: {}
+            properties: {},
+
+            startDiscovery: function() {
+                this.$.discovery.startDiscovery();
+            },
+            handleDiscovery: function (event) {
+                var detail = event.detail;
+                var address = detail.address;
+                this.$.client.connectToDevice(address);
+            },
+            handleMessage: function (event) {
+                var detail = event.detail;
+
+            }
 
         });
     })();

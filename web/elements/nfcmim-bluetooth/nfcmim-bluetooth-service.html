@@ -51,12 +51,13 @@ The `nfcmim-bluetooth-service` provides
                     var onListenCallback = function () {
 
                     };
+                    that.serverSocketId = createInfo.socketId;
                     chrome.bluetoothSocket.listenUsingRfcomm(createInfo.socketId,
                             that.uuid, onListenCallback);
                 });
 
 
-
+                var onReceive = that.receiveMessage.bind(that);
                 chrome.bluetoothSocket.onAccept.addListener(function(acceptInfo) {
                     if (info.socketId != serverSocketId)
                         return;
@@ -71,6 +72,24 @@ The `nfcmim-bluetooth-service` provides
                     chrome.bluetoothSocket.setPaused(false);
                 });
             },
+
+            // --- Receiver
+            // --- ---------------------
+
+            receiveMessage: function (receiveInfo) {
+                if (receiveInfo.socketId != this.socketId) {
+                    return;
+                }
+                console.log('receive message', receiveInfo.data);
+                this.fire('message', receiveInfo.data);
+                // receiveInfo.data is an ArrayBuffer.
+            },
+
+            receiveError: function (errorInfo) {
+                // Cause is in errorInfo.error.
+                console.log(errorInfo.errorMessage);
+            },
+
 
         });
     })();
