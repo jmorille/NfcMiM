@@ -64,16 +64,17 @@ The `nfcmim-bluetooth-discovery` provides
 
             _addDevice: function (device) {
               // this.deviceName[device.address] = device;
-                this.notifyPath('deviceName.' + device.address, device);
+               // this.notifyPath('deviceName.' + device.address, device);
                 this.push('devices', device);
                 console.log('Add', device.address, device.name);
             },
             _removeDevice: function (device) {
-                delete this.deviceName[device.address];
+              //  delete this.deviceName[device.address];
 
+               
                 // TODO this.slice('devices', device);
 
-                this.notifyPath('deviceName.' + device.address, undefined);
+               // this.notifyPath('deviceName.' + device.address, undefined);
             },
             /**
              * Bluetooth Doc : https://developer.chrome.com/apps/app_bluetooth
