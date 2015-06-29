@@ -28,7 +28,7 @@ var gutil = require('gulp-util'),
     prod = gulp.prod = gutil.env.prod;
 
 // Browser reload
-var livereload = require('gulp-livereload');
+//var livereload = require('gulp-livereload');
 //var filter = require('gulp-filter');
 var browserSync = require('browser-sync');
 var browserSyncReload = browserSync.reload;
@@ -238,8 +238,8 @@ var cpFunc = function () {
         //   .pipe($.if('*.css', cssChannel()))
         .pipe(assets.restore())
         .pipe($.useref())
-        .pipe(gulp.dest(DEST_DIR))
-        .pipe(livereload());
+        .pipe(gulp.dest(DEST_DIR));
+        //.pipe(livereload());
     // .pipe(browserSyncReload({stream: true}));
 
 };
@@ -274,8 +274,8 @@ var imagesFunc = function (cb) {
             progressive: true,
             interlaced: true
         }))
-        .pipe(gulp.dest(DEST_DIR))
-        .pipe(livereload());
+        .pipe(gulp.dest(DEST_DIR));
+//        .pipe(livereload());
     // .pipe(browserSyncReload({stream: true}));
 };
 

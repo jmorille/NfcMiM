@@ -35,23 +35,33 @@ The `nfcmim-bluetooth-service` provides
                     notify: true,
                     value: '1105'
                 },
-                socketId: {
+                serverSocketId: {
                     type: Number,
                     notify: true
                 }
             },
 
+            // --- Life Cycle
+            // --- ---------------------
+            ready: function () {
+                this._acceptConnection();
+            },
 
             // --- Accepting client connections
             // --- ---------------------
 
             _acceptConnection: function () {
                 var that = this;
+                if (!chrome.bluetoothSocket) {
+                    console.warn('chrome.bluetoothSocket not existing !!');
+                    return;
+                }
                 chrome.bluetoothSocket.create(function(createInfo) {
+                    var that = this;
                     var onListenCallback = function () {
-
+                        that.serverSocketId = createInfo.socketId;
+                        console.log('Server socket Id', that.serverSocketId );
                     };
-                    that.serverSocketId = createInfo.socketId;
                     chrome.bluetoothSocket.listenUsingRfcomm(createInfo.socketId,
                             that.uuid, onListenCallback);
                 });
@@ -59,12 +69,14 @@ The `nfcmim-bluetooth-service` provides
 
                 var onReceive = that.receiveMessage.bind(that);
                 chrome.bluetoothSocket.onAccept.addListener(function(acceptInfo) {
-                    if (info.socketId != serverSocketId)
+                    var that = this;
+                    if (acceptInfo.socketId != that.serverSocketId)
+                        console.log('Bad  socket Id',acceptInfo.socketId );
                         return;
 
                     // Say hello...
-                    chrome.bluetoothSocket.send(acceptInfo.clientSocketId,
-                            data, onSendCallback);
+                    var data = [1,2];
+                    chrome.bluetoothSocket.send(acceptInfo.clientSocketId,  data, onSendCallback);
 
                     // Accepted sockets are initially paused,
                     // set the onReceive listener first.

@@ -18,20 +18,30 @@ The `nfcmim-bluetooth-discovery` provides
         }
 
         .line {
-            margin: 2px;
+            margin: auto;
             height: 48px;
         }
 
     </style>
     <template>
-        <template is="dom-repeat" items="[[devices]]" as="device">
-            <paper-material elevation="1" class="line">
-                <div on-tap="_handleSelectDevice">
-                    <span>[[device.name]]</span>
-                    <span>[[device.address]]</span>
-                </div>
-            </paper-material>
-        </template>
+        <paper-dialog id="dialog">
+            <h2>Discovery</h2>
+            <paper-dialog-scrollable>
+                <template is="dom-repeat" items="[[devices]]" as="device">
+                    <paper-material elevation="1" class="line">
+                        <div on-tap="_handleSelectDevice">
+                            <span>[[device.name]]</span>
+                            <span>[[device.address]]</span>
+                        </div>
+                    </paper-material>
+                </template>
+            </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-dismiss on-tap="_handleCancelDiscovery">Cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+
     </template>
 </dom-module>
 
@@ -47,10 +57,7 @@ The `nfcmim-bluetooth-discovery` provides
                     type: Array,
                     notify: true,
                     value: function () {
-                        return [
-                            {name: "test", address: "00:ZZZ:EEEE"},
-                            {name: "test", address: "00:ZZZ:EEEE"}
-                        ];
+                        return [];
                     }
                 }
             },
@@ -63,25 +70,37 @@ The `nfcmim-bluetooth-discovery` provides
             },
 
             _addDevice: function (device) {
-              // this.deviceName[device.address] = device;
-               // this.notifyPath('deviceName.' + device.address, device);
-                this.push('devices', device);
-                console.log('Add', device.address, device.name);
+                // this.deviceName[device.address] = device;
+                // this.notifyPath('deviceName.' + device.address, device);
+                if (!this._getDeviceByAdress(device.address)) {
+                    this.push('devices', device);
+                    console.log('Add', device.address, device.name);
+                }
             },
             _removeDevice: function (device) {
-              //  delete this.deviceName[device.address];
-
-               
-                // TODO this.slice('devices', device);
-
-               // this.notifyPath('deviceName.' + device.address, undefined);
+                //  delete this.deviceName[device.address];
+                var index = this.devices.reduce(function (acc, item, index) {
+                    if ((acc === -1) && (item.address === device.address)) {
+                        return index;
+                    }
+                    return acc;
+                }, -1);
+                if (index>0) {
+                    this.splice('devices', index, 1);
+                }
             },
             /**
              * Bluetooth Doc : https://developer.chrome.com/apps/app_bluetooth
              */
             startDiscovery: function () {
-                if (!chrome.bluetooth){
+                this.$.dialog.open();
+                if (!chrome.bluetooth) {
                     console.warn('chrome.bluetooth not existing !!');
+                    console.log('Inject mock datas');
+                    this._addDevice({name: "Mock device 01", address: "01:02:03:04:05:06"});
+                    this._addDevice({name: "Mock device 02", address: "0A:0B:0C:0D:0E:0F"});
+                    this._addDevice({name: "Mock device 03", address: "AA:BB:CC:DD:EE:FF"});
+                    this._addDevice({name: "Mock device 02 bis", address: "0A:0B:0C:0D:0E:0F"});
                     return;
                 }
                 var that = this;
@@ -122,9 +141,14 @@ The `nfcmim-bluetooth-discovery` provides
                 console.log('Select device : ', model.device);
                 this.fire('discovery', model.device);
                 // TODO  this.connectToDevice(device);
+                this.$.dialog.close();
                 this.set('devices', []);
             },
 
+            _handleCancelDiscovery: function (event) {
+                this.$.dialog.close();
+                this.set('devices', []);
+            }
 
         });
     })();
