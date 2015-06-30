@@ -36,5 +36,9 @@
   "resolutions": {
     "polymer": "^1.0.0",
     "webcomponentsjs": "^0.7.2"
+  },
+  "devDependencies": {
+    "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+    "web-component-tester": "*"
   }
 }

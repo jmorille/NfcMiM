@@ -1,0 +1,42 @@
+<link rel="import" href="../web/bower_components/polymer/polymer.html">
+<link rel="import" href="../web/elements/nfcmim-bluetooth/nfnmim-array-buffer-behaviour.html">
+
+
+<!--
+
+The `nfnmim-array-buffer` provides  
+
+@group nfnmim-array-buffer Elements
+@element nfnmim-array-buffer
+@demo demo/index.html
+-->
+
+<dom-module id="nfnmim-array-buffer">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <content></content>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfnmim-array-buffer',
+
+            properties: {},
+
+            behaviors: [
+                Polymer.NfcmimArrayBufferBehavior
+            ]
+
+
+        });
+    })();
+</script>

@@ -1,0 +1,29 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<script>
+    /**
+     * @polymerBehavior
+     */
+    Polymer.NfcmimArrayBufferBehavior = {
+        // --- ArrayBuffer Decoder/Encoder
+        // --- ---------------------
+        decodeArrayBuffer: function (arrayBuffer, encoding) {
+            encoding = encoding || 'utf-8';
+            // The decode() method takes a DataView as a parameter, which is a wrapper on top of the ArrayBuffer.
+            var dataView = new DataView(arrayBuffer);
+            // The TextDecoder interface is documented at http://encoding.spec.whatwg.org/#interface-textdecoder
+            var decoder = new TextDecoder(encoding);
+            var decodedString = decoder.decode(dataView);
+            return decodedString;
+        },
+
+        encodeArrayBuffer: function (messageString, encoding) {
+            encoding = encoding || 'utf-8';
+            var encoder = new TextEncoder(encoding);
+            var uint8array = encoder.encode(messageString);
+            return uint8array;
+        }
+
+    };
+</script>

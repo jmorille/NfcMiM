@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+    <title>fire-form</title>
+
+    <script src="../web/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../web/bower_components/web-component-tester/browser.js"></script>
+    <script src="../web/bower_components/test-fixture/test-fixture-mocha.js"></script>
+
+    <link rel="import" href="../web/bower_components/polymer/polymer.html">
+    <link rel="import" href="../web/bower_components/test-fixture/test-fixture.html">
+    <link rel="import" href="../web/elements/nfcmim-bluetooth/nfnmim-array-buffer-behaviour.html">
+    <link rel="import" href="nfnmim-array-buffer.html">
+
+</head>
+<body>
+
+<test-fixture id="Basic">
+    <template>
+        <nfnmim-array-buffer>
+        </nfnmim-array-buffer>
+    </template>
+</test-fixture>
+
+
+
+<script>
+    suite('encode / decode ArrayBuffer', function() {
+        test('serializes both custom and native elements', function() {
+            f = fixture('Basic');
+            var message = 'Hello Word';
+            var encodeMsg = f.encodeArrayBuffer(message);
+            var decodeMsg = f.decodeArrayBuffer(encodeMsg);
+            assert.equal(decodeMsg, message);
+        });
+
+    });
+
+</script>
+
+</body>
+</html>

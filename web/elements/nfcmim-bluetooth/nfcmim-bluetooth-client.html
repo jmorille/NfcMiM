@@ -136,11 +136,16 @@ The `nfcmim-bluetooth` provides
 
             receiveMessage: function (receiveInfo) {
                 if (receiveInfo.socketId != this.socketId) {
-                    console.log('Bad client socket Id',receiveInfo.socketId , ' !==', this.socketId);
+                    console.log('Bad client socket Id', receiveInfo.socketId, ' !==', this.socketId);
                     return;
                 }
-                console.log('receive message', receiveInfo.data);
-                this.fire('message', receiveInfo.data);
+                var msgEvent = {
+                    type: 'client',
+                    socketId: this.socketId,
+                    data: receiveInfo.data
+                };
+                console.log('client receive message', msgEvent);
+                this.fire('message', msgEvent);
                 // receiveInfo.data is an ArrayBuffer.
             },
 

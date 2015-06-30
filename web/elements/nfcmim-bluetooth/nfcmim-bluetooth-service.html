@@ -74,7 +74,7 @@ The `nfcmim-bluetooth-service` provides
                     }
 
                     // Say hello...
-                    var data = [1,2];
+                    var data = that.encodeArrayBuffer('Hello from server');
                     var onSendCallback = function (bytesSent) {
                       console.log('Send bytesSent', bytesSent);
                     };
@@ -86,6 +86,16 @@ The `nfcmim-bluetooth-service` provides
                     chrome.bluetoothSocket.setPaused(false);
                 });
             },
+            // --- encoding
+            // --- ---------------------
+
+
+            encodeArrayBuffer: function (messageString, encoding) {
+                encoding = encoding || 'utf-8';
+                var encoder = new TextEncoder(encoding);
+                var uint8array = encoder.encode(messageString);
+                return uint8array;
+            },
 
             // --- Receiver
             // --- ---------------------
@@ -95,8 +105,14 @@ The `nfcmim-bluetooth-service` provides
                     console.log('Bad  socket Id',receiveInfo.socketId , ' !==', this.serverSocketId);
                     return;
                 }
-                console.log('receive message', receiveInfo.data);
-                this.fire('message', receiveInfo.data);
+                var msgEvent = {
+                    type: 'server',
+                    socketId: this.serverSocketId,
+                    data: receiveInfo.data
+                };
+
+                console.log('receive message', msgEvent);
+                this.fire('message', msgEvent);
                 // receiveInfo.data is an ArrayBuffer.
             },
 
