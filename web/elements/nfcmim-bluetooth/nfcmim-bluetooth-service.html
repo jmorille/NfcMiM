@@ -33,7 +33,7 @@ The `nfcmim-bluetooth-service` provides
                 uuid: {
                     type: String,
                     notify: true,
-                    value: '1105'
+                    value:  '00001101-0000-1000-8000-00805f9b34fb'
                 },
                 serverSocketId: {
                     type: Number,
@@ -57,7 +57,6 @@ The `nfcmim-bluetooth-service` provides
                     return;
                 }
                 chrome.bluetoothSocket.create(function(createInfo) {
-                    var that = this;
                     var onListenCallback = function () {
                         that.serverSocketId = createInfo.socketId;
                         console.log('Server socket Id', that.serverSocketId );
@@ -69,10 +68,10 @@ The `nfcmim-bluetooth-service` provides
 
                 var onReceive = that.receiveMessage.bind(that);
                 chrome.bluetoothSocket.onAccept.addListener(function(acceptInfo) {
-                    var that = this;
-                    if (acceptInfo.socketId != that.serverSocketId)
-                        console.log('Bad  socket Id',acceptInfo.socketId );
+                    if (acceptInfo.socketId != that.serverSocketId) {
+                        console.log('Bad  socket Id',acceptInfo.socketId , ' !==', that.serverSocketId);
                         return;
+                    }
 
                     // Say hello...
                     var data = [1,2];
@@ -92,7 +91,8 @@ The `nfcmim-bluetooth-service` provides
             // --- ---------------------
 
             receiveMessage: function (receiveInfo) {
-                if (receiveInfo.socketId != this.socketId) {
+                if (receiveInfo.socketId != this.serverSocketId) {
+                    console.log('Bad  socket Id',receiveInfo.socketId , ' !==', this.serverSocketId);
                     return;
                 }
                 console.log('receive message', receiveInfo.data);
@@ -102,7 +102,7 @@ The `nfcmim-bluetooth-service` provides
 
             receiveError: function (errorInfo) {
                 // Cause is in errorInfo.error.
-                console.log(errorInfo.errorMessage);
+                console.error(errorInfo.errorMessage);
             },
 
 

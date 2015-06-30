@@ -11,7 +11,7 @@
   "offline_enabled": true,
   "permissions": [],
   "bluetooth": {
-    "uuids": [ "1105", "1106" ],
+    "uuids": [ "1105", "1106", "00001101-0000-1000-8000-00805f9b34fb" ],
     "socket": true
   },
   "app": {

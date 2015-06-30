@@ -72,6 +72,7 @@ The `nfcmim-bluetooth-discovery` provides
             _addDevice: function (device) {
                 // this.deviceName[device.address] = device;
                 // this.notifyPath('deviceName.' + device.address, device);
+                console.log('request add device :', device);
                 if (!this._getDeviceByAdress(device.address)) {
                     this.push('devices', device);
                     console.log('Add', device.address, device.name);
@@ -79,6 +80,7 @@ The `nfcmim-bluetooth-discovery` provides
             },
             _removeDevice: function (device) {
                 //  delete this.deviceName[device.address];
+                console.log('request delete device :', device);
                 var index = this.devices.reduce(function (acc, item, index) {
                     if ((acc === -1) && (item.address === device.address)) {
                         return index;
@@ -110,6 +112,7 @@ The `nfcmim-bluetooth-discovery` provides
                 });
                 // Add listeners to receive newly found devices and updates
                 // to the previously known devices.
+                console.log('add listener device ');
                 var addDevice = this._addDevice.bind(this);
                 var removeDevice = this._removeDevice.bind(this);
                 chrome.bluetooth.onDeviceAdded.addListener(addDevice);
@@ -119,16 +122,22 @@ The `nfcmim-bluetooth-discovery` provides
                 // With the listeners in place, get the list of devices found in
                 // previous discovery sessions, or any currently active ones,
                 // along with paired devices.
+                console.log('get devices ');
                 chrome.bluetooth.getDevices(function (devices) {
+                    console.log('get devices :', devices);
                     for (var i = 0; i < devices.length; i++) {
+                        console.log('get device [', i, '] ', devices[i]);
                         that._addDevice(devices[i]);
                     }
                 });
                 // Now begin the discovery process.
+                console.log('request  startDiscovery on ',  chrome.bluetooth.startDiscovery);
                 chrome.bluetooth.startDiscovery(function () {
+                    console.log('startDiscovery now');
                     // Stop discovery after 30 seconds.
                     setTimeout(function () {
                         chrome.bluetooth.stopDiscovery(function () {
+                            console.log('stop tDiscovery after timeout');
                             chrome.bluetooth.onDeviceAdded.removeListener(addDevice);
                             chrome.bluetooth.onDeviceAdded.removeListener(removeDevice);
                         });

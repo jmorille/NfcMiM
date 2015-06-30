@@ -33,7 +33,7 @@ The `nfcmim-bluetooth` provides
                 uuid: {
                     type: String,
                     notify: true,
-                    value: '1105'
+                    value: '00001101-0000-1000-8000-00805f9b34fb'
                 },
                 socketId: {
                     type: Number,
@@ -76,12 +76,12 @@ The `nfcmim-bluetooth` provides
             },
 
             connectToDevice: function (address) {
+                var that = this;
                 console.log('request connection to device ', address);
                 if (!chrome.bluetoothSocket) {
                     console.warn('chrome.bluetoothSocket not existing !!');
                     return;
                 }
-                var that = this;
                 // Create Socket
                 chrome.bluetoothSocket.create(function (createInfo) {
                     // Callback action
@@ -91,6 +91,7 @@ The `nfcmim-bluetooth` provides
                         } else {
                             // Profile implementation here.
                             that.socketId = createInfo.socketId;
+                            console.log('Client connect to', createInfo.socketId);
                             // Register the Message listener
                             that._registerReceiveListener();
                         }
@@ -135,6 +136,7 @@ The `nfcmim-bluetooth` provides
 
             receiveMessage: function (receiveInfo) {
                 if (receiveInfo.socketId != this.socketId) {
+                    console.log('Bad client socket Id',receiveInfo.socketId , ' !==', this.socketId);
                     return;
                 }
                 console.log('receive message', receiveInfo.data);
@@ -144,7 +146,7 @@ The `nfcmim-bluetooth` provides
 
             receiveError: function (errorInfo) {
                 // Cause is in errorInfo.error.
-                console.log(errorInfo.errorMessage);
+                console.error(errorInfo.errorMessage);
             },
 
 

@@ -19,8 +19,9 @@ The `nfcmin-chat` provides
     </style>
     <template>
         <nfcmim-layout>
+            <paper-icon-button icon="refresh" action on-tap="startDiscovery"></paper-icon-button>
 
-            <h1 on-tap="startDiscovery">Chat c</h1>
+            <h1 >Chat c</h1>
 
             <template is="dom-repeat" items="[[messages]]" as="item">
                 <paper-material elevation="1">
