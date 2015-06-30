@@ -23,8 +23,8 @@
         encodeArrayBuffer: function (messageString, encoding) {
             encoding = encoding || 'utf-8';
             var encoder = new TextEncoder(encoding);
-            var uint8array = encoder.encode(messageString);
-            return uint8array;
+            var uint8Array  = encoder.encode(messageString);
+            return uint8Array;
         }
 
     };

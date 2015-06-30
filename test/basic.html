@@ -23,14 +23,19 @@
 </test-fixture>
 
 
-
 <script>
-    suite('encode / decode ArrayBuffer', function() {
-        test('serializes both custom and native elements', function() {
+    suite('encode / decode ArrayBuffer', function () {
+        test('serializes both custom and native elements', function () {
             f = fixture('Basic');
             var message = 'Hello Word';
             var encodeMsg = f.encodeArrayBuffer(message);
-            assert.equal(typeof decodeMsg, 'string');
+            assert.ok(encodeMsg);
+         //   assert.ok(encodeMsg  instanceof ArrayBuffer);
+
+            assert.equal(typeof encodeMsg, 'object');
+            assert.equal(encodeMsg.byteLength, 10);
+
+            // TODO test ArrayBuffer
             var decodeMsg = f.decodeArrayBuffer(encodeMsg);
             assert.equal(decodeMsg, message);
         });
