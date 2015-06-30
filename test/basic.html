@@ -30,6 +30,7 @@
             f = fixture('Basic');
             var message = 'Hello Word';
             var encodeMsg = f.encodeArrayBuffer(message);
+            assert.equal(typeof decodeMsg, 'string');
             var decodeMsg = f.decodeArrayBuffer(encodeMsg);
             assert.equal(decodeMsg, message);
         });
