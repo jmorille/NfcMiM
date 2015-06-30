@@ -62,8 +62,8 @@ The `nfcmim-bluetooth-service` provides
                         that.serverSocketId = createInfo.socketId;
                         console.log('Server socket Id', that.serverSocketId );
                     };
-                    chrome.bluetoothSocket.listenUsingRfcomm(createInfo.socketId,
-                            that.uuid, onListenCallback);
+                    console.log('Server socket Id from server :', createInfo.socketId,  that.uuid);
+                    chrome.bluetoothSocket.listenUsingRfcomm(createInfo.socketId, that.uuid, onListenCallback);
                 });
 
 
@@ -76,6 +76,9 @@ The `nfcmim-bluetooth-service` provides
 
                     // Say hello...
                     var data = [1,2];
+                    var onSendCallback = function (bytesSent) {
+                      console.log('Send bytesSent', bytesSent);
+                    };
                     chrome.bluetoothSocket.send(acceptInfo.clientSocketId,  data, onSendCallback);
 
                     // Accepted sockets are initially paused,
