@@ -1,0 +1,68 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<!--
+
+The `nfcmim-nfc` provides wrapper of http://plugins.cordova.io/#/package/com.chariotsolutions.nfc.plugin
+stored in the repository https://github.com/chariotsolutions/phonegap-nfc
+
+@group nfcmim-nfc Elements
+@element nfcmim-nfc
+@demo demo/index.html
+-->
+
+<dom-module id="nfcmim-nfc">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+            <h1 on-tap="_registerNfcListener">Nfc Tag</h1>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfcmim-nfc',
+
+            properties: {},
+
+            checkNfcEnable: function() {
+                if (!nfc) {
+                    console.warn('No nfc libs');
+                    return;
+                }
+                var onSuccess = function () {
+                    console.log('Nfc Enable');
+                };
+                var onFailure = function () {
+                    console.log('Nfc disabled');
+                };
+                nfc.enabled(onSuccess, onFailure);
+            },
+
+            _registerNfcListener: function () {
+                if (!nfc) {
+                    console.warn('No nfc libs');
+                    return;
+                }
+                var onSuccess = function () {
+                    console.log("Listening for NDEF Tags.");
+                };
+                var onFailure = function (reason) {
+                    alert("Error adding NFC Listener " + reason);
+                };
+                var onNfcEvent = function (nfcEvent) {
+                    console.log( nfcEvent.tag );
+                };
+                nfc.addNdefListener(onNfcEvent,onSuccess, onFailure );
+            }
+
+        });
+    })();
+</script>

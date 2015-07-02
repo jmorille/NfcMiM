@@ -29,6 +29,10 @@ The `nfcmim-bluetooth-service` provides
         Polymer({
             is: 'nfcmim-bluetooth-service',
 
+            behaviors: [
+                Polymer.NfcmimArrayBufferBehavior
+            ],
+
             properties: {
                 uuid: {
                     type: String,
@@ -85,16 +89,6 @@ The `nfcmim-bluetooth-service` provides
                     chrome.bluetoothSocket.onReceive.addListener(onReceive);
                     chrome.bluetoothSocket.setPaused(false);
                 });
-            },
-            // --- encoding
-            // --- ---------------------
-
-
-            encodeArrayBuffer: function (messageString, encoding) {
-                encoding = encoding || 'utf-8';
-                var encoder = new TextEncoder(encoding);
-                var uint8array = encoder.encode(messageString);
-                return uint8array;
             },
 
             // --- Receiver

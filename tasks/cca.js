@@ -64,6 +64,19 @@ gulp.task('cca:push', function () {
     //    .pipe($.shell(['cca push --watch'], {cwd: paths.buildCCA}));
 });
 
+// ChromeApp Mobile - Push to Mobile Device
+gulp.task('cca:plugin', function (cb) {
+    var ccaPlugins = [
+        'com.chariotsolutions.nfc.plugin'
+    ];
+    if (ccaPlugins) {
+        ccaPlugins.forEach(function (item) {
+            runCca('plugin add --save ' + item);
+        });
+    }
+    cb();
+});
+
 // ChromeApp Mobile - Build (in ./build folder)
 gulp.task('cca:build', ['cca:create'], function () {
     var releaseOpts = prod ? ' --release' : '';

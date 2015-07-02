@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+
+<!--
+
+The `nfcmim-reader` provides  
+
+@group nfcmim-reader Elements
+@element nfcmim-reader
+@demo demo/index.html
+-->
+
+<dom-module id="nfcmim-reader">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <nfcmim-layout>
+            <h1>Reader</h1>
+            <nfcmim-nfc></nfcmim-nfc>
+        </nfcmim-layout>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'nfcmim-reader',
+
+            properties: {}
+
+        });
+    })();
+</script>

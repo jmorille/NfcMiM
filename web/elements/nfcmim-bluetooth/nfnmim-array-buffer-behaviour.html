@@ -24,7 +24,7 @@
             encoding = encoding || 'utf-8';
             var encoder = new TextEncoder(encoding);
             var uint8Array  = encoder.encode(messageString);
-            return uint8Array;
+            return uint8Array.buffer;
         }
 
     };

@@ -10,7 +10,7 @@ The `nfcmin-chat` provides
 @demo demo/index.html
 -->
 
-<dom-module id="nfcmin-chat">
+<dom-module id="nfcmim-chat">
 
     <style>
         :host {
@@ -45,7 +45,11 @@ The `nfcmin-chat` provides
         'use strict';
 
         Polymer({
-            is: 'nfcmin-chat',
+            is: 'nfcmim-chat',
+
+            behaviors: [
+                Polymer.NfcmimArrayBufferBehavior
+            ],
 
             properties: {
                 uuid: {
@@ -81,25 +85,6 @@ The `nfcmin-chat` provides
                 // TODO  this.connectToDevice(device);
             },
 
-
-
-            // --- ArrayBuffer Decoder/Encoder
-            // --- ---------------------
-            decodeArrayBuffer: function (arrayBuffer, encoding) {
-                encoding = encoding || 'utf-8';
-                // The decode() method takes a DataView as a parameter, which is a wrapper on top of the ArrayBuffer.
-                var dataView = new DataView(arrayBuffer);
-                // The TextDecoder interface is documented at http://encoding.spec.whatwg.org/#interface-textdecoder
-                var decoder = new TextDecoder(encoding);
-                var decodedString = decoder.decode(dataView);
-                return decodedString;
-            },
-            encodeArrayBuffer: function (messageString, encoding) {
-                encoding = encoding || 'utf-8';
-                var encoder = new TextEncoder(encoding);
-                var uint8array = encoder.encode(messageString);
-                return uint8array;
-            },
 
 
             // --- Receiver
