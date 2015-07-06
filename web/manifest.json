@@ -8,6 +8,7 @@
   "icons": {
     "128": "assets/icon_128.png"
   },
+  "cspUnsafeEval": true,
   "offline_enabled": true,
   "permissions": [],
   "bluetooth": {

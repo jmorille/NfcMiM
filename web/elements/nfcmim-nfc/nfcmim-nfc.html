@@ -40,8 +40,8 @@ stored in the repository https://github.com/chariotsolutions/phonegap-nfc
                 var onSuccess = function () {
                     console.log('Nfc Enable');
                 };
-                var onFailure = function () {
-                    console.log('Nfc disabled');
+                var onFailure = function (err) {
+                    console.error('Nfc error', err);
                 };
                 nfc.enabled(onSuccess, onFailure);
             },
@@ -54,13 +54,40 @@ stored in the repository https://github.com/chariotsolutions/phonegap-nfc
                 var onSuccess = function () {
                     console.log("Listening for NDEF Tags.");
                 };
-                var onFailure = function (reason) {
-                    alert("Error adding NFC Listener " + reason);
+                var onFailure = function (err) {
+                    console.error("Error adding NFC Listener " + err);
                 };
                 var onNfcEvent = function (nfcEvent) {
-                    console.log( nfcEvent.tag );
+                    console.log( 'onNfcEvent : ', nfcEvent );
+                    console.log( 'onNfcEvent tag : ', nfcEvent.tag );
                 };
-                nfc.addNdefListener(onNfcEvent,onSuccess, onFailure );
+                nfc.addTagDiscoveredListener(this.onNfc.bind(this),onSuccess, onFailure );
+                // TODO   nfc.removeTagDiscoveredListener
+                nfc.addNdefListener(this.onNdef.bind(this),onSuccess, onFailure );
+                // Register   // because of an intent in AndroidManifest.xml.
+                nfc.addMimeTypeListener('*/*', this.onNdef.bind(this),onSuccess, onFailure)
+            },
+
+            onNfc: function (nfcEvent) {
+
+                var tag = nfcEvent.tag;
+
+                console.log('onNfc : ', JSON.stringify(nfcEvent.tag));
+               // app.clearScreen();
+
+             //   tagContents.innerHTML = app.nonNdefTagTemplate(tag);
+
+            },
+
+            onNdef: function (nfcEvent) {
+                console.log('onNdef :', JSON.stringify(nfcEvent.tag));
+//                app.clearScreen();
+                // BB7 has different names, copy to Android names
+                if (tag.serialNumber) {
+                    tag.id = tag.serialNumber;
+                    tag.isWritable = !tag.isLocked;
+                    tag.canMakeReadOnly = tag.isLockable;
+                }
             }
 
         });
